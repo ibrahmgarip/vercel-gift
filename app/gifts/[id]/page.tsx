@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/components/auth-provider"
 import { useToast } from "@/hooks/use-toast"
 import { MarketplaceListings } from "@/components/marketplace-listings"
+import { PageLayout } from "@/components/page-layout"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -244,7 +245,7 @@ export default function GiftDetailPage() {
 
   if (loading) {
     return (
-      <div className="container py-8">
+      <PageLayout showFilters={false}>
         <div className="animate-pulse space-y-8">
           <div className="h-8 bg-muted rounded w-1/3"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -260,27 +261,29 @@ export default function GiftDetailPage() {
             </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     )
   }
 
   if (!gift) {
     return (
-      <div className="container py-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Hediye bulunamadı</h1>
-        <p className="text-muted-foreground mb-6">Bu hediye mevcut değil veya kaldırılmış olabilir.</p>
-        <Button asChild>
-          <Link href="/">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Ana Sayfaya Dön
-          </Link>
-        </Button>
-      </div>
+      <PageLayout showFilters={false}>
+        <div className="text-center py-8">
+          <h1 className="text-2xl font-bold mb-4">Hediye bulunamadı</h1>
+          <p className="text-muted-foreground mb-6">Bu hediye mevcut değil veya kaldırılmış olabilir.</p>
+          <Button asChild>
+            <Link href="/">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Ana Sayfaya Dön
+            </Link>
+          </Button>
+        </div>
+      </PageLayout>
     )
   }
 
   return (
-    <div className="container py-8">
+    <PageLayout showFilters={false}>
       <Button variant="ghost" asChild className="mb-6">
         <Link href="/">
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -438,6 +441,6 @@ export default function GiftDetailPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageLayout>
   )
 }

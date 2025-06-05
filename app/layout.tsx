@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "HediyeKovanı - Mükemmel Hediyeleri Keşfedin",
   description: "Harika hediye fikirlerini keşfetmek ve paylaşmak için topluluk odaklı platform",
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
@@ -23,8 +23,10 @@ export default function RootLayout({
     <html lang="tr">
       <body className={inter.className}>
         <AuthProvider>
-          <Navbar />
-          <main>{children}</main>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1">{children}</main>
+          </div>
           <Toaster />
         </AuthProvider>
       </body>

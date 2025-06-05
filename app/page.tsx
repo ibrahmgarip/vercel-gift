@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react"
 import { GiftCard } from "@/components/gift-card"
 import { GiftFilters } from "@/components/gift-filters"
+import { TopSellingProducts } from "@/components/top-selling-products"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, TrendingUp, Gift, Users, Star } from "lucide-react"
+import { Search, Gift, Users, Star } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/components/auth-provider"
+import { GiftCategories } from "@/components/gift-categories"
+import Link from "next/link"
 
 interface Filters {
   occasion: string[]
@@ -29,6 +32,7 @@ export default function HomePage() {
     priceRange: [],
     sortBy: "trending",
   })
+  const [isCategorySelected, setIsCategorySelected] = useState(false)
 
   useEffect(() => {
     fetchGifts()
@@ -60,6 +64,22 @@ export default function HomePage() {
         break
       case "top_rated":
         query = query.order("total_score", { ascending: false })
+        break
+      case "best_selling":
+        try {
+          query = query.order("sales_count", { ascending: false })
+        } catch (e) {
+          console.warn("sales_count column might not exist yet, falling back to total_score")
+          query = query.order("total_score", { ascending: false })
+        }
+        break
+      case "popularity":
+        try {
+          query = query.order("popularity_score", { ascending: false })
+        } catch (e) {
+          console.warn("popularity_score column might not exist yet, falling back to total_score")
+          query = query.order("total_score", { ascending: false })
+        }
         break
       default:
         query = query.order("total_score", { ascending: false })
@@ -124,6 +144,10 @@ export default function HomePage() {
       gift.interests.some((interest: string) => interest.toLowerCase().includes(searchQuery.toLowerCase())),
   )
 
+  const handleCategorySelectionChange = (isSelected: boolean) => {
+    setIsCategorySelected(isSelected)
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -174,72 +198,99 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="container py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filters Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24">
-              <GiftFilters filters={filters} onFiltersChange={setFilters} />
-            </div>
+      {/* Main Content - Full Screen Layout */}
+      <section className="py-8">
+        {/* Categories Section - Full Width */}
+        <div className="container">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-3xl font-bold">Kategoriler</h2>
+            <Button variant="outline" asChild>
+              <Link href="/categories">Tümünü Gör</Link>
+            </Button>
           </div>
+          <GiftCategories onCategorySelectionChange={handleCategorySelectionChange} />
+        </div>
 
-          {/* Gifts Grid */}
-          <div className="lg:col-span-3">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                <h2 className="text-2xl font-bold">
-                  {filters.sortBy === "newest"
-                    ? "En Yeni Hediyeler"
-                    : filters.sortBy === "top_rated"
-                      ? "En Çok Beğenilen Hediyeler"
-                      : "Popüler Hediyeler"}
-                </h2>
-              </div>
-              <p className="text-muted-foreground">{filteredGifts.length} hediye bulundu</p>
-            </div>
-
-            {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="bg-muted aspect-square rounded-lg mb-4"></div>
-                    <div className="space-y-2">
-                      <div className="bg-muted h-4 rounded w-3/4"></div>
-                      <div className="bg-muted h-3 rounded w-1/2"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : filteredGifts.length === 0 ? (
-              <div className="text-center py-12">
-                <Gift className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Hediye bulunamadı</h3>
-                <p className="text-muted-foreground mb-4">
-                  Filtrelerinizi veya arama terimlerinizi değiştirmeyi deneyin
-                </p>
-                <Button
-                  onClick={() =>
-                    setFilters({
-                      occasion: [],
-                      recipient: [],
-                      interests: [],
-                      priceRange: [],
-                      sortBy: "trending",
-                    })
-                  }
-                >
-                  Filtreleri Temizle
-                </Button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredGifts.map((gift) => (
-                  <GiftCard key={gift.id} gift={gift} />
-                ))}
+        {/* Filters and Content Layout */}
+        <div className="container mt-12">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Left Sidebar - Filters */}
+            {!isCategorySelected && (
+              <div className="lg:col-span-1">
+                <div className="sticky top-24">
+                  <GiftFilters filters={filters} onFiltersChange={setFilters} />
+                </div>
               </div>
             )}
+
+            {/* Main Content */}
+            <div className={`${isCategorySelected ? "lg:col-span-4" : "lg:col-span-3"} space-y-12`}>
+              {/* Top Selling Products Section */}
+              <div>
+                <TopSellingProducts showAllCategories={true} />
+              </div>
+
+              {/* Additional Gifts Section */}
+              {filteredGifts.length > 0 && (
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold">
+                      {filters.sortBy === "newest"
+                        ? "En Yeni Hediyeler"
+                        : filters.sortBy === "top_rated"
+                          ? "En Çok Beğenilen Hediyeler"
+                          : filters.sortBy === "best_selling"
+                            ? "En Çok Satan Hediyeler"
+                            : filters.sortBy === "popularity"
+                              ? "En Popüler Hediyeler"
+                              : "Diğer Hediyeler"}
+                    </h2>
+                    <p className="text-muted-foreground">{filteredGifts.length} hediye bulundu</p>
+                  </div>
+
+                  {loading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="animate-pulse">
+                          <div className="bg-muted aspect-square rounded-lg mb-4"></div>
+                          <div className="space-y-2">
+                            <div className="bg-muted h-4 rounded w-3/4"></div>
+                            <div className="bg-muted h-3 rounded w-1/2"></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : filteredGifts.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Gift className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold mb-2">Hediye bulunamadı</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Filtrelerinizi veya arama terimlerinizi değiştirmeyi deneyin
+                      </p>
+                      <Button
+                        onClick={() =>
+                          setFilters({
+                            occasion: [],
+                            recipient: [],
+                            interests: [],
+                            priceRange: [],
+                            sortBy: "trending",
+                          })
+                        }
+                      >
+                        Filtreleri Temizle
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {filteredGifts.map((gift) => (
+                        <GiftCard key={gift.id} gift={gift} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>

@@ -106,7 +106,7 @@ export function GiftFilters({ filters, onFiltersChange }: GiftFiltersProps) {
   const hasActiveFilters = Object.values(filters).some((f) => (Array.isArray(f) ? f.length > 0 : f !== "trending"))
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 bg-background rounded-lg p-4 border shadow-sm">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Filtreler</h2>
         <div className="flex items-center gap-2">
@@ -160,6 +160,8 @@ export function GiftFilters({ filters, onFiltersChange }: GiftFiltersProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="trending">Popüler</SelectItem>
+            <SelectItem value="popularity">En Popüler</SelectItem>
+            <SelectItem value="best_selling">En Çok Satan</SelectItem>
             <SelectItem value="newest">En Yeni</SelectItem>
             <SelectItem value="top_rated">En Çok Beğenilen</SelectItem>
             <SelectItem value="price_low">Fiyat: Düşükten Yükseğe</SelectItem>

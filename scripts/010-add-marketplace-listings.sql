@@ -1,4 +1,3 @@
--- Create a new table for marketplace listings
 CREATE TABLE IF NOT EXISTS marketplace_listings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   gift_id UUID REFERENCES gifts(id) ON DELETE CASCADE,
