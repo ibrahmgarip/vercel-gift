@@ -30,6 +30,7 @@ export default function AuthPage() {
         email,
         password,
         options: {
+          emailRedirectTo: undefined, // Disable email redirect
           data: {
             username,
             full_name: username,
@@ -39,13 +40,9 @@ export default function AuthPage() {
 
       if (error) throw error
 
-      if (data.user && !data.session) {
-        toast({
-          title: "E-postanızı kontrol edin!",
-          description: "Giriş yapmadan önce lütfen hesabınızı doğrulayın.",
-        })
-      } else if (data.user && data.session) {
-        // User is automatically signed in, create profile manually if trigger didn't work
+      // User is created and automatically signed in
+      if (data.user) {
+        // Create profile manually if trigger didn't work
         const { error: profileError } = await supabase.from("profiles").upsert({
           id: data.user.id,
           username,

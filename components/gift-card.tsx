@@ -47,6 +47,50 @@ export function GiftCard({ gift, showFullDescription = false }: GiftCardProps) {
   const [score, setScore] = useState(gift.total_score)
   const [imageError, setImageError] = useState(false)
 
+  // Helper function to ensure user profile exists
+  const ensureUserProfile = async () => {
+    if (!user) return false
+
+    try {
+      // First, check if the user profile exists
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .single()
+
+      // If profile exists, we're good
+      if (profileData && !profileError) {
+        return true
+      }
+
+      // If profile doesn't exist, try to create it
+      const { error: createProfileError } = await supabase.from("profiles").upsert(
+        {
+          id: user.id,
+          username: user.user_metadata?.username || user.email?.split("@")[0] || "user",
+          full_name:
+            user.user_metadata?.full_name || user.user_metadata?.username || user.email?.split("@")[0] || "User",
+          points: 0,
+        },
+        {
+          onConflict: "id",
+          ignoreDuplicates: true,
+        },
+      )
+
+      if (createProfileError) {
+        console.error("Error creating profile:", createProfileError)
+        return false
+      }
+
+      return true
+    } catch (error) {
+      console.error("Error ensuring user profile:", error)
+      return false
+    }
+  }
+
   const handleVote = async (voteType: "up" | "down") => {
     if (!user) {
       toast({
@@ -60,6 +104,12 @@ export function GiftCard({ gift, showFullDescription = false }: GiftCardProps) {
     setIsVoting(true)
 
     try {
+      // Ensure user profile exists before voting
+      const profileExists = await ensureUserProfile()
+      if (!profileExists) {
+        throw new Error("Kullanıcı profili oluşturulamadı")
+      }
+
       // If clicking the same vote, remove it
       if (currentVote === voteType) {
         const { error } = await supabase.from("votes").delete().eq("gift_id", gift.id).eq("user_id", user.id)
@@ -94,11 +144,11 @@ export function GiftCard({ gift, showFullDescription = false }: GiftCardProps) {
       const { error: updateError } = await supabase.from("gifts").update({ total_score: score }).eq("id", gift.id)
 
       if (updateError) throw updateError
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error voting:", error)
       toast({
         title: "Hata",
-        description: "Oyunuz kaydedilemedi. Lütfen tekrar deneyin.",
+        description: error.message || "Oyunuz kaydedilemedi. Lütfen tekrar deneyin.",
         variant: "destructive",
       })
     } finally {
