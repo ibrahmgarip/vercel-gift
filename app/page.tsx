@@ -152,7 +152,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-primary/10 to-background py-16">
-        <div className="container text-center">
+        <div className="container text-center mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">Mükemmel Hediyeleri Keşfedin</h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Her özel gün için benzersiz, topluluk tarafından önerilen hediyeler bulun. Dünya çapında binlerce hediye

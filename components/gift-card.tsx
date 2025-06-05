@@ -194,14 +194,16 @@ export function GiftCard({ gift, showFullDescription = false }: GiftCardProps) {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="aspect-square relative">
-        <Image
-          src={getImageSrc() || "/placeholder.svg"}
-          alt={gift.title}
-          fill
-          className="object-cover"
-          onError={() => setImageError(true)}
-          crossOrigin="anonymous"
-        />
+        <Link href={`/gifts/${gift.id}`}>
+          <Image
+            src={getImageSrc() || "/placeholder.svg"}
+            alt={gift.title}
+            fill
+            className="object-cover cursor-pointer hover:opacity-90 transition-opacity"
+            onError={() => setImageError(true)}
+            crossOrigin="anonymous"
+          />
+        </Link>
         <div className="absolute top-2 right-2">
           <Badge variant="secondary">{gift.price_range}</Badge>
         </div>
