@@ -119,12 +119,35 @@ export function GiftCard({ gift, showFullDescription = false }: GiftCardProps) {
         setCurrentVote(null)
         setScore((prev) => prev + (voteType === "up" ? -1 : 1))
       } else {
-        // Insert or update vote
-        const { error } = await supabase.from("votes").upsert({
-          gift_id: gift.id,
-          user_id: user.id,
-          vote_type: voteType,
-        })
+        // Check if a vote already exists
+        const { data: existingVote } = await supabase
+          .from("votes")
+          .select("*")
+          .eq("gift_id", gift.id)
+          .eq("user_id", user.id)
+          .maybeSingle()
+
+        let error
+
+        if (existingVote) {
+          // Update existing vote
+          const { error: updateError } = await supabase
+            .from("votes")
+            .update({ vote_type: voteType })
+            .eq("gift_id", gift.id)
+            .eq("user_id", user.id)
+
+          error = updateError
+        } else {
+          // Insert new vote
+          const { error: insertError } = await supabase.from("votes").insert({
+            gift_id: gift.id,
+            user_id: user.id,
+            vote_type: voteType,
+          })
+
+          error = insertError
+        }
 
         if (error) throw error
 
