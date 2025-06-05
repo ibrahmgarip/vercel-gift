@@ -201,7 +201,7 @@ export default function HomePage() {
       {/* Main Content - Full Screen Layout */}
       <section className="py-8">
         {/* Categories Section - Full Width */}
-        <div className="container">
+        <div className="container mx-auto">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-3xl font-bold">Kategoriler</h2>
             <Button variant="outline" asChild>
