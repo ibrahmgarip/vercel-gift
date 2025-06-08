@@ -3,8 +3,6 @@
 import type React from "react"
 
 import { createContext, useContext, useEffect, useState } from "react"
-import type { User } from "@supabase/supabase-js"
-import { supabase } from "@/lib/supabase"
 
 type AuthContextType = {
   user: User | null
@@ -27,25 +25,12 @@ export const useAuth = () => {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  // Supabase authentication has been removed.
+  // You will need to implement your own authentication logic here.
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
   }, [])
 
   const signOut = async () => {

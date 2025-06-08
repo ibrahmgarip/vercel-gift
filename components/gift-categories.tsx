@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { GiftCard } from "@/components/gift-card"
 import { Smartphone, Heart, Music, Gamepad2, Home, Book, ChevronRight, Star, Gift, X } from "lucide-react"
-import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/components/auth-provider"
 import Link from "next/link"
 

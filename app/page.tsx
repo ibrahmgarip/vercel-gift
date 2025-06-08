@@ -7,7 +7,6 @@ import { TopSellingProducts } from "@/components/top-selling-products"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Gift, Users, Star } from "lucide-react"
-import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/components/auth-provider"
 import { GiftCategories } from "@/components/gift-categories"
 import Link from "next/link"
@@ -22,7 +21,7 @@ interface Filters {
 
 export default function HomePage() {
   const { user } = useAuth()
-  const [gifts, setGifts] = useState<any[]>([])
+  const [gifts, setGifts] = useState<any[]>([]) // TODO: Replace with actual gift data fetching logic
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [filters, setFilters] = useState<Filters>({
@@ -40,12 +39,6 @@ export default function HomePage() {
 
   const fetchGifts = async () => {
     setLoading(true)
-
-    let query = supabase.from("gifts").select(`
-      *,
-      profiles!gifts_submitted_by_fkey (username, avatar_url)
-    `)
-
     // Apply filters
     if (filters.occasion.length > 0) {
       query = query.in("occasion", filters.occasion)
