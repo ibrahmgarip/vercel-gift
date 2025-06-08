@@ -19,13 +19,12 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="mx-auto max-w-7xl w-full flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 font-bold text-xl">
             <Gift className="h-6 w-6 text-primary" />
             HediyeKovanı
           </Link>
-
           <nav className="hidden md:flex items-center gap-6">
             <Link href="/" className="text-sm font-medium hover:text-primary">
               Keşfet
@@ -39,14 +38,16 @@ export function Navbar() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-2">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Hediye ara..." className="w-64" />
+        <div className="flex items-center justify-center flex-1 max-w-md mx-4">
+          <div className="flex items-center gap-2 w-full">
+            <Search className="h-5 w-5 text-muted-foreground" />
+            <Input placeholder="Hediye ara..." className="w-full" />
           </div>
-
+        </div>
+        
+        <div className="flex items-center gap-2">
           {user ? (
-            <div className="flex items-center gap-2">
+            <>
               <Button asChild size="sm">
                 <Link href="/submit">
                   <Plus className="h-4 w-4 mr-2" />
@@ -77,16 +78,16 @@ export function Navbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
+            </>
           ) : (
-            <div className="flex items-center gap-2">
+            <>
               <Button variant="ghost" asChild>
                 <Link href="/auth">Giriş Yap</Link>
               </Button>
               <Button asChild>
                 <Link href="/auth">Üye Ol</Link>
               </Button>
-            </div>
+            </>
           )}
         </div>
       </div>
