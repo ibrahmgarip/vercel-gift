@@ -19,10 +19,12 @@ export function Navbar() {
   const { user, signOut } = useAuth();
   const [searchText, setSearchText] = useState('');
   const phrases = [
-    "ara | genç yiğenim için hediyeler, bilimden, oyunlardan ve sanattan hoşlanıyor",
-    "search for gifts",
-    "find unique items",
-    "gifts for mom",
+    "ara | erkek kardeşim için hediyeler, bilimden, oyunlardan ve sanattan hoşlanıyor",
+    "ara | anne için hediyeler, el yapımı ve kişisel dokunuşlu",
+    "ara | baba için hediyeler, balık",
+    "ara | kız kardeşim için hediyeler, moda ve güzellik ürünleri",
+    "ara | erkek için hediyeler, teknoloji ve spor ürünleri",
+    "ara | çocuk için hediyeler, oyuncaklar ve eğitim materyalleri",
   ];
   const [phraseIndex, setPhraseIndex] = useState(0);
 
