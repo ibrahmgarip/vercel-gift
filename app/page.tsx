@@ -11,6 +11,7 @@ import { useAuth } from "@/components/auth-provider"
 import { GiftCategories } from "@/components/gift-categories"
 import Link from "next/link"
 import Slideshow from "@/components/slideshow"
+import Banner from "@/components/banners"
 
 interface Filters {
   occasion: string[]
@@ -24,6 +25,7 @@ export default function HomePage() {
   return (
     <div>
       <Slideshow />
+      <Banner />
       {/* Add other main page content here later */}
     </div>
   )
