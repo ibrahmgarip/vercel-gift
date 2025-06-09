@@ -10,6 +10,7 @@ import { Search, Gift, Users, Star } from "lucide-react"
 import { useAuth } from "@/components/auth-provider"
 import { GiftCategories } from "@/components/gift-categories"
 import Link from "next/link"
+import Slideshow from "@/components/slideshow"
 
 interface Filters {
   occasion: string[]
@@ -21,6 +22,9 @@ interface Filters {
 
 export default function HomePage() {
   return (
-    <div>test123</div>
+    <div>
+      <Slideshow />
+      {/* Add other main page content here later */}
+    </div>
   )
 }
