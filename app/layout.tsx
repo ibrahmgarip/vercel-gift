@@ -11,7 +11,6 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "HediyeKovanı - Mükemmel Hediyeleri Keşfedin",
   description: "Harika hediye fikirlerini keşfetmek ve paylaşmak için topluluk odaklı platform",
-  generator: "v0.dev",
 }
 
 export default function RootLayout({
