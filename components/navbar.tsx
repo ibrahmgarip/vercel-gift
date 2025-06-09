@@ -1,21 +1,42 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useAuth } from "@/components/auth-provider"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Link from "next/link";
+import { useState, useEffect } from 'react';
+import { useAuth } from "@/components/auth-provider";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Gift, Plus, User, LogOut, Search, Heart, Package, ShoppingCart } from "lucide-react"
-import { Input } from "@/components/ui/input" // Assuming Input is for the search bar
+} from "@/components/ui/dropdown-menu";
+import { Gift, Plus, User, LogOut, Search, Heart, Package, ShoppingCart } from "lucide-react";
+import { Input } from "@/components/ui/input"; // Assuming Input is for the search bar
 
 export function Navbar() {
-  const { user, signOut } = useAuth()
+  const { user, signOut } = useAuth();
+  const [searchText, setSearchText] = useState('');
+  const phrases = [
+    "ara | genç yiğenim için hediyeler, bilimden, oyunlardan ve sanattan hoşlanıyor",
+    "search for gifts",
+    "find unique items",
+    "gifts for mom",
+  ];
+  const [phraseIndex, setPhraseIndex] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setPhraseIndex((prevIndex) => (prevIndex + 1) % phrases.length);
+    }, 3000); // Change phrase every 3 seconds
+
+    return () => clearInterval(intervalId); // Clear interval on unmount
+  }, [phrases.length]);
+
+  useEffect(() => {
+    setSearchText(phrases[phraseIndex]);
+  }, [phraseIndex, phrases]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -43,7 +64,7 @@ export function Navbar() {
           <div className="flex items-center w-full px-3 py-1">
             <Search className="h-4 w-4 text-gray-500 mr-2" />
             <Input
-              placeholder="ara | genç yiğenim için hediyeler, bilimden, oyunlardan ve sanattan hoşlanıyor"
+              placeholder={searchText}
               className="w-full border-none focus:ring-0 focus-visible:ring-0 bg-transparent text-sm"
             />
           </div>
@@ -118,5 +139,5 @@ export function Navbar() {
         </nav>
       </div>
     </header>
-  )
+  );
 }
