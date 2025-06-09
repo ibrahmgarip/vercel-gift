@@ -55,9 +55,6 @@ export default function HomePage() {
       case "newest":
         query = query.order("created_at", { ascending: false })
         break
-      case "top_rated":
-        query = query.order("total_score", { ascending: false })
-        break
       case "best_selling":
         try {
           query = query.order("sales_count", { ascending: false })
@@ -75,7 +72,6 @@ export default function HomePage() {
         }
         break
       default:
-        query = query.order("total_score", { ascending: false })
     }
 
     const { data: giftsData, error } = await query.limit(20)
