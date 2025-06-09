@@ -34,7 +34,7 @@ export function Navbar() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 font-bold text-xl">
             {/* Placeholder for Uncommon Goods logo */}
-            <span className="text-green-700 text-2xl font-serif">uncommon goods</span>
+            <span className="text-green-700 text-4xl font-serif">hedify</span>
           </Link>
         </div>
 
@@ -43,7 +43,7 @@ export function Navbar() {
           <div className="flex items-center w-full px-3 py-1">
             <Search className="h-4 w-4 text-gray-500 mr-2" />
             <Input
-              placeholder="search | gifts for teenage niece, she likes science, games, art"
+              placeholder="ara | genç yiğenim için hediyeler, bilimden, oyunlardan ve sanattan hoşlanıyor"
               className="w-full border-none focus:ring-0 focus-visible:ring-0 bg-transparent text-sm"
             />
           </div>
@@ -53,19 +53,19 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" className="flex items-center gap-1">
             <User className="h-4 w-4" />
-            Sign in
+            Giriş Yap
           </Button>
           <Button variant="ghost" size="sm" className="flex items-center gap-1">
             <Heart className="h-4 w-4" />
-            Wish list
+            Favoriler
           </Button>
           <Button variant="ghost" size="sm" className="flex items-center gap-1">
             <Gift className="h-4 w-4" />
-            Gift finder
+            Hediye Bulucu
           </Button>
           <Button variant="ghost" size="sm" className="flex items-center gap-1">
             <ShoppingCart className="h-4 w-4" />
-            Cart
+            Sepet
           </Button>
         </div>
       </div>
@@ -74,46 +74,46 @@ export function Navbar() {
       <div className="mx-auto max-w-7xl w-full flex items-center justify-center h-10 text-sm border-t">
         <nav className="flex items-center gap-6">
           <Link href="#" className="hover:underline">
-            new
+            yeni
           </Link>
           <Link href="#" className="hover:underline">
-            father's day
+            babalar günü
           </Link>
           <Link href="#" className="hover:underline">
-            gifts
+            hediyelik
           </Link>
           <Link href="#" className="hover:underline">
-            interests
+            ilgi alanları
           </Link>
           <Link href="#" className="hover:underline">
-            birthday
+            doğum günü
           </Link>
           <Link href="#" className="hover:underline">
-            men
+            erkek
           </Link>
           <Link href="#" className="hover:underline">
-            women
+            kadın
           </Link>
           <Link href="#" className="hover:underline">
-            kids
+            çocuk
           </Link>
           <Link href="#" className="hover:underline">
-            kitchen & bar
+            mutfak & bar
           </Link>
           <Link href="#" className="hover:underline">
-            home & garden
+            ev & bahçe
           </Link>
           <Link href="#" className="hover:underline">
-            jewelry
+            takı & aksesuar
           </Link>
           <Link href="#" className="hover:underline">
-            experiences
+            deneyimler
           </Link>
           <Link href="#" className="hover:underline">
-            corporate gifts
+            kurumsal hediyeler
           </Link>
           <Link href="#" className="hover:underline">
-            sale
+            indirimler
           </Link>
         </nav>
       </div>
