@@ -10,72 +10,72 @@ import { Input } from "@/components/ui/input"; // Assuming Input is for the sear
 
 const categories = [
   {
-    name: "yeni",
+    name: "Yeni",
     subcategories: ["Yeni Gelenler", "Popüler", "Son Eklenenler"],
     image: "/slideshow.webp",
   },
   {
-    name: "babalar günü",
+    name: "Babalar Günü",
     subcategories: ["Babalar Günü Hediyeleri", "Kişiye Özel Hediyeler", "Deneyimler"],
     image: "/slideshow.webp",
   },
   {
-    name: "hediyelik",
+    name: "Hediyelik",
     subcategories: ["Benzersiz Hediyeler", "Özel Tasarım Hediyeler", "Temalı Hediyeler"],
     image: "/slideshow.webp",
   },
   {
-    name: "ilgi alanları",
+    name: "İlgi Alanları",
     subcategories: ["Spor", "Teknoloji", "Doğa"],
     image: "/slideshow.webp",
   },
   {
-    name: "doğum günü",
+    name: "Doğum Günü",
     subcategories: ["Kadınlara Doğum Günü Hediyeleri", "Erkeklere Doğum Günü Hediyeleri", "Önemli Doğum Günleri"],
     image: "/slideshow.webp",
   },
   {
-    name: "erkek",
+    name: "Erkek",
     subcategories: ["Erkeklere Hediyeler", "Aksesuarlar", "Bakım"],
     image: "/slideshow.webp",
   },
   {
-    name: "kadın",
+    name: "Kadın",
     subcategories: ["Kadınlara Hediyeler", "Takı", "Moda"],
     image: "/slideshow.webp",
   },
   {
-    name: "çocuk",
+    name: "Çocuk",
     subcategories: ["Çocuklara Hediyeler", "Oyuncaklar", "Kitaplar"],
     image: "/slideshow.webp",
   },
   {
-    name: "mutfak & bar",
+    name: "Mutfak & Bar",
     subcategories: ["Mutfak Aletleri", "Bar Malzemeleri", "Yemek Kitapları"],
     image: "/slideshow.webp",
   },
   {
-    name: "ev & bahçe",
+    name: "Ev & Bahçe",
     subcategories: ["Ev Dekorasyonu", "Bahçe Aletleri", "Dış Mekan"],
     image: "/slideshow.webp",
   },
   {
-    name: "takı & aksesuar",
+    name: "Takı & Aks.",
     subcategories: ["Kolyeler", "Küpeler", "Bilezikler"],
     image: "/slideshow.webp",
   },
   {
-    name: "deneyimler",
+    name: "Deneyimler",
     subcategories: ["Yemek Kursları", "Şarap Tadımları", "Macera Aktiviteleri"],
     image: "/slideshow.webp",
   },
   {
-    name: "kurumsal hediyeler",
+    name: "Kurumsal",
     subcategories: ["Çalışan Hediyeleri", "Müşteri Hediyeleri", "Promosyon Ürünleri"],
     image: "/slideshow.webp",
   },
   {
-    name: "indirimler",
+    name: "İndirimler",
     subcategories: ["İndirimli Ürünler", "Fırsatlar", "Haftanın Fırsatları"],
     image: "/slideshow.webp",
   },
@@ -95,51 +95,16 @@ export function Navbar() {
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [openCategory, setOpenCategory] = useState(null);
   const timeoutRef = useRef(null);
-  const menuRef = useRef(null);
-  const [menuStyle, setMenuStyle] = useState({ left: '0' });
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setPhraseIndex((prevIndex) => (prevIndex + 1) % phrases.length);
-    }, 3000); // Change phrase every 3 seconds
-
-    return () => clearInterval(intervalId); // Clear interval on unmount
-  }, [phrases.length]);
-
-  useEffect(() => {
-    setSearchText(phrases[phraseIndex]);
-  }, [phraseIndex, phrases]);
 
   const handleMouseEnter = (categoryName) => {
     clearTimeout(timeoutRef.current);
     setOpenCategory(categoryName);
-
-    // Use a small delay to ensure the menu is rendered before calculating its position
-    setTimeout(() => {
-      if (menuRef.current) {
-        const menuWidth = menuRef.current.offsetWidth;
-        const windowWidth = window.innerWidth;
-        const menuRect = menuRef.current.getBoundingClientRect();
-
-        if (menuRect.right > windowWidth) {
-          const overflow = menuRect.right - windowWidth;
-          setMenuStyle({ left: `-${overflow}px` });
-        } else {
-          setMenuStyle({ left: '0' });
-        }
-      }
-    }, 50);
   };
 
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setOpenCategory(null);
     }, 100);
-    setMenuStyle({ left: '0' }); // Reset the left style when the menu is closed
-  };
-
-  const handleClick = (categoryName) => {
-    setOpenCategory((prevOpenCategory) => (prevOpenCategory === categoryName ? null : categoryName));
   };
 
   return (
@@ -195,49 +160,63 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Navigation Bar */}
-      <div className="mx-auto max-w-7xl w-full flex items-center justify-center h-10 text-sm border-t">
-        <nav className="flex items-center gap-6">
-          {categories.map((category) => {
-            return (
-              <div
-                key={category.name}
-                className="relative"
-                onMouseEnter={() => handleMouseEnter(category.name)}
-                onMouseLeave={handleMouseLeave}
-                onClick={() => handleClick(category.name)}
-                ref={menuRef}
-              >
-                <Link href="#" className="hover:underline">
-                  {category.name}
-                </Link>
-                <div
-                  className={`absolute mt-2 w-[800px] h-[400px] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 ${openCategory === category.name ? 'block' : 'hidden'} flex`}
-                  style={{ ...menuStyle }}
-                >
-                  <div className="w-2/3 p-4">
-                    <ul className="grid gap-2">
-                      {category.subcategories.map((subcategory) => (
-                        <li key={subcategory}>
-                          <Link href="#" className="hover:underline block px-4 py-2 rounded-md hover:bg-gray-100">
-                            {subcategory}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="w-1/3">
-                    <img
-                      src={category.image}
-                      alt={category.name}
-                      className="h-full w-full object-cover rounded-r-md"
-                    />
-                  </div>
+      {/* Mega Menu Navigation Bar */}
+      <div className="border-b">
+        <div className="mx-auto max-w-7xl px-6 sm:px-6 lg:px-8">
+          <nav className="relative z-10" aria-label="Global">
+            <div className="flex w-full items-center justify-between">
+              <div className="flex w-full items-center justify-between space-x-2 lg:w-auto">
+                {/* Category Links */}
+                <div className="hidden lg:ml-10 lg:flex">
+                  {categories.map((category) => (
+                    <div
+                      key={category.name}
+                      className="relative group"
+                      onMouseEnter={() => handleMouseEnter(category.name)}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      <button
+                        type="button"
+                        className="text-gray-700 inline-flex items-center space-x-2 rounded-md border border-transparent px-2 py-1 text-sm font-normal hover:text-gray-900 focus:outline-none"
+                      >
+                        <span>{category.name}</span>
+                      </button>
+
+                      {/* Mega Menu Dropdown */}
+                      <div
+                        className={`${
+                          openCategory === category.name ? 'block' : 'hidden'
+                        } absolute left-1/2 z-10 mt-3 w-screen max-w-md -translate-x-1/2 transform px-4 sm:px-0`}
+                      >
+                        <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                          <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
+                            {category.subcategories.map((subcategory) => (
+                              <Link
+                                key={subcategory}
+                                href="#"
+                                className="-m-3 block rounded-md p-3 hover:bg-gray-50 transition ease-in-out duration-150"
+                              >
+                                <p className="text-base font-medium text-gray-900">{subcategory}</p>
+                              </Link>
+                            ))}
+                          </div>
+                          {/* Image Section */}
+                          <div className="bg-gray-50 px-5 py-5 sm:py-6">
+                            <img
+                              src={category.image}
+                              alt={category.name}
+                              className="h-32 w-full object-cover rounded-r-md"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            );
-          })}
-        </nav>
+            </div>
+          </nav>
+        </div>
       </div>
     </header>
   );
