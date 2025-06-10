@@ -162,7 +162,7 @@ export function Navbar() {
 
       {/* Mega Menu Navigation Bar */}
       <div className="border-b">
-        <div className="mx-auto max-w-7xl px-6 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-6 sm:px-6 lg:px-8 mt-2">
           <nav className="relative z-10" aria-label="Global">
             <div className="flex w-full items-center justify-between">
               <div className="flex w-full items-center justify-between space-x-2 lg:w-auto">

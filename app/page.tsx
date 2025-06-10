@@ -25,13 +25,8 @@ export default function HomePage() {
   return (
     <div>
       <Slideshow />
-      <Banner />
       <CommunityBanners />
-      <div className="w-7xl max-w-7xl mx-auto px-4 mt-4">
-        <h1 className="text-2xl  mb-4 mt-2">Kategoriler</h1>
-        <GiftCategories />
-        < /div>
-      {/* Add other main page content here later */}
+      <Banner />
     </div>
   )
 }
