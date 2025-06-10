@@ -91,85 +91,6 @@ export function TopSellingProducts({ categoryId, limit = 5, showAllCategories = 
       // Try to fetch from the materialized view first
       let topSellingData: any[] = []
       let useView = false
-
-      try {
-        const { data: viewData, error: viewError } = await supabase.from("top_selling_by_category").select("*").limit(1)
-
-        if (!viewError) {
-          useView = true
-          // Now fetch the actual data
-          let query = supabase.from("top_selling_by_category").select("*")
-
-          if (categoryId) {
-            query = query.eq("category_id", categoryId)
-          }
-
-          query = query.order("rank_in_category", { ascending: true })
-
-          if (!showAllCategories) {
-            query = query.limit(limit)
-          }
-
-          const { data, error } = await query
-          if (!error) {
-            topSellingData = data || []
-          }
-        }
-      } catch (viewError) {
-        console.log("Materialized view not available, using fallback")
-        useView = false
-      }
-
-      // Fallback to regular gifts if view doesn't work
-      if (!useView || topSellingData.length === 0) {
-        console.log("Using fallback: fetching regular gifts")
-
-        let giftQuery = supabase.from("gifts").select(`
-          *,
-          profiles!gifts_submitted_by_fkey (username, avatar_url)
-        `)
-
-        // Apply category filtering for fallback
-        if (categoryId) {
-          const categoryFilters = {
-            teknoloji: { interests: ["Teknoloji"] },
-            "saglik-wellness": { interests: ["Sağlık & Wellness"] },
-            muzik: { interests: ["Müzik"] },
-            oyun: { interests: ["Oyun"] },
-            "ev-yasam": { interests: ["Ev"] },
-            moda: { interests: ["Moda"] },
-            "kitap-kultur": { interests: ["Kitap", "Kültür"] },
-            "yiyecek-icecek": { interests: ["Yiyecek & İçecek"] },
-            "spor-fitness": { interests: ["Spor", "Fitness"] },
-            fotograf: { interests: ["Fotoğrafçılık", "Sanat"] },
-            "erkek-arkadas": { recipient: "Erkek Arkadaş" },
-            "kiz-arkadas": { recipient: "Kız Arkadaş" },
-            "anneler-gunu": { occasion: "Anneler Günü", recipient: "Anne" },
-            "babalar-gunu": { occasion: "Babalar Günü", recipient: "Baba" },
-            "sevgililer-gunu": { occasion: "Sevgililer Günü" },
-            "yeni-is-kutlamasi": { occasion: ["Yeni İş", "Terfi"] },
-            mezuniyet: { occasion: "Mezuniyet" },
-            yildonumu: { occasion: "Yıldönümü" },
-            "cocuklar-icin": { recipient: "Çocuk" },
-            "kendine-hediye": { occasion: "Kendine Hediye" },
-          }
-
-          const filter = categoryFilters[categoryId as keyof typeof categoryFilters]
-          if (filter) {
-            if (filter.interests) {
-              giftQuery = giftQuery.overlaps("interests", filter.interests)
-            } else if (filter.recipient) {
-              giftQuery = giftQuery.eq("recipient", filter.recipient)
-            } else if (filter.occasion) {
-              if (Array.isArray(filter.occasion)) {
-                giftQuery = giftQuery.in("occasion", filter.occasion)
-              } else {
-                giftQuery = giftQuery.eq("occasion", filter.occasion)
-              }
-            }
-          }
-        }
-
         // Order by popularity score if available, otherwise by total_score
         try {
           giftQuery = giftQuery.order("popularity_score", { ascending: false })
@@ -219,46 +140,6 @@ export function TopSellingProducts({ categoryId, limit = 5, showAllCategories = 
 
       // If we got here, we successfully used the materialized view
       setTopProducts(topSellingData)
-
-      // Fetch full gift details for the top products
-      if (topSellingData && topSellingData.length > 0) {
-        const giftIds = topSellingData.map((p) => p.gift_id)
-
-        const giftQuery = supabase
-          .from("gifts")
-          .select(`
-        *,
-        profiles!gifts_submitted_by_fkey (username, avatar_url)
-      `)
-          .in("id", giftIds)
-
-        const { data: giftsData, error: giftsError } = await giftQuery
-
-        if (giftsError) throw giftsError
-
-        // Fetch user votes if logged in
-        let userVotes: any[] = []
-        if (user && giftsData && giftsData.length > 0) {
-          const { data: votesData } = await supabase
-            .from("votes")
-            .select("gift_id, vote_type")
-            .eq("user_id", user.id)
-            .in("gift_id", giftIds)
-
-          userVotes = votesData || []
-        }
-
-        // Fetch comment counts
-        let commentCounts: any[] = []
-        if (giftsData && giftsData.length > 0) {
-          const { data: commentsData } = await supabase.from("comments").select("gift_id").in("gift_id", giftIds)
-
-          commentCounts = giftIds.map((giftId) => ({
-            gift_id: giftId,
-            count: commentsData?.filter((c) => c.gift_id === giftId).length || 0,
-          }))
-        }
-
         // Merge data and maintain ranking order
         const processedGifts = topSellingData
           .map((topProduct) => {
@@ -289,19 +170,7 @@ export function TopSellingProducts({ categoryId, limit = 5, showAllCategories = 
     } finally {
       setLoading(false)
     }
-  }
-
-  const trackClick = async (giftId: string, clickType: "view" | "affiliate_click" | "share") => {
-    try {
-      await supabase.from("gift_clicks").insert({
-        gift_id: giftId,
-        user_id: user?.id || null,
-        click_type: clickType,
-      })
-    } catch (error) {
-      console.error("Error tracking click:", error)
-    }
-  }
+  
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -431,4 +300,3 @@ export function TopSellingProducts({ categoryId, limit = 5, showAllCategories = 
       </CardContent>
     </Card>
   )
-}

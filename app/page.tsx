@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { GiftCard } from "@/components/gift-card"
 import { GiftFilters } from "@/components/gift-filters"
-import { TopSellingProducts } from "@/components/top-selling-products"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Gift, Users, Star } from "lucide-react"
@@ -12,6 +11,7 @@ import { GiftCategories } from "@/components/gift-categories"
 import Link from "next/link"
 import Slideshow from "@/components/slideshow"
 import Banner from "@/components/banners"
+import CommunityBanners from "@/components/community-banners"
 
 interface Filters {
   occasion: string[]
@@ -26,8 +26,8 @@ export default function HomePage() {
     <div>
       <Slideshow />
       <Banner />
+      <CommunityBanners />
       <div className="w-7xl max-w-7xl mx-auto px-4 mt-4">
-        <TopSellingProducts />
         <h1 className="text-2xl  mb-4 mt-2">Kategoriler</h1>
         <GiftCategories />
         < /div>
