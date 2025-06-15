@@ -1,302 +1,114 @@
-"use client"
+import Image from 'next/image';
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { GiftCard } from "@/components/gift-card"
-import { TrendingUp, Crown, FlameIcon as Fire, Star, ChevronRight } from "lucide-react"
-import { useAuth } from "@/components/auth-provider"
-import Link from "next/link"
+// 1. Ürünlerimizin veri yapısını tanımlıyoruz (TypeScript)
+type Product = {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  imageUrl: string;
+};
 
-interface TopSellingProduct {
-  gift_id: string
-  title: string
-  image_url: string
-  price_range: string
-  total_score: number
-  sales_count: number
-  click_count: number
-  popularity_score: number
-  rank_in_category: number
-  category_id: string
-}
+// 2. Veri çekme fonksiyonu
+// Bu fonksiyon SADECE SUNUCUDA çalışır.
+// Gerçek uygulamada, API'nızdan veya veritabanınızdan veri çekeceksiniz.
+async function getTopSellingProducts(): Promise<Product[]> {
+  // --- ÖRNEK VERİ ---
+  // Burası, API'nıza fetch isteği atacağınız yerdir.
+  // const res = await fetch('http://.../api/products/top-selling');
+  // const data = await res.json();
+  // return data;
 
-interface TopSellingProductsProps {
-  categoryId?: string
-  limit?: number
-  showAllCategories?: boolean
-}
-
-const CATEGORY_NAMES: Record<string, string> = {
-  teknoloji: "Teknoloji",
-  "saglik-wellness": "Sağlık & Wellness",
-  muzik: "Müzik",
-  oyun: "Oyun & Eğlence",
-  "ev-yasam": "Ev & Yaşam",
-  moda: "Moda & Aksesuar",
-  "kitap-kultur": "Kitap & Kültür",
-  "yiyecek-icecek": "Yiyecek & İçecek",
-  "spor-fitness": "Spor & Fitness",
-  fotograf: "Fotoğraf & Sanat",
-  "erkek-arkadas": "Erkek Arkadaş İçin",
-  "kiz-arkadas": "Kız Arkadaş İçin",
-  "anneler-gunu": "Anneler Günü",
-  "babalar-gunu": "Babalar Günü",
-  "sevgililer-gunu": "Sevgililer Günü",
-  "yeni-is-kutlamasi": "Yeni İş Kutlaması",
-  mezuniyet: "Mezuniyet",
-  yildonumu: "Yıldönümü",
-  "cocuklar-icin": "Çocuklar İçin",
-  "kendine-hediye": "Kendine Hediye",
-}
-
-const CATEGORIES = [
-  { id: "teknoloji", interests: ["teknoloji", "elektronik"] },
-  { id: "saglik-wellness", interests: ["sağlık", "wellness", "güzellik"] },
-  { id: "muzik", interests: ["müzik", "konser", "enstrüman"] },
-  { id: "oyun", interests: ["oyun", "e-spor", "video oyunları"] },
-  { id: "ev-yasam", interests: ["ev", "dekorasyon", "mobilya"] },
-  { id: "moda", interests: ["moda", "giyim", "aksesuar"] },
-  { id: "kitap-kultur", interests: ["kitap", "kültür", "sanat"] },
-  { id: "yiyecek-icecek", interests: ["yiyecek", "içecek", "gurme"] },
-  { id: "spor-fitness", interests: ["spor", "fitness", "outdoor"] },
-  { id: "fotograf", interests: ["fotoğraf", "sanat", "galeri"] },
-  { id: "erkek-arkadas", interests: ["erkek", "hediye", "erkek arkadaş"] },
-  { id: "kiz-arkadas", interests: ["kız", "hediye", "kız arkadaş"] },
-  { id: "anneler-gunu", interests: ["anne", "anneler günü", "çiçek"] },
-  { id: "babalar-gunu", interests: ["baba", "babalar günü", "teknoloji"] },
-  { id: "sevgililer-gunu", interests: ["sevgili", "sevgililer günü", "romantik"] },
-  { id: "yeni-is-kutlamasi", interests: ["iş", "kutlama", "kariyer"] },
-  { id: "mezuniyet", interests: ["mezuniyet", "üniversite", "lise"] },
-  { id: "yildonumu", interests: ["yıldönümü", "evlilik", "ilişki"] },
-  { id: "cocuklar-icin", interests: ["çocuk", "oyuncak", "eğlence"] },
-  { id: "kendine-hediye", interests: ["kendine", "hediye", "lüks"] },
-]
-
-export function TopSellingProducts({ categoryId, limit = 5, showAllCategories = false }: TopSellingProductsProps) {
-  const { user } = useAuth()
-  const [topProducts, setTopProducts] = useState<TopSellingProduct[]>([])
-  const [fullGifts, setFullGifts] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetchTopSellingProducts()
-  }, [categoryId, limit, user])
-
-  const fetchTopSellingProducts = async () => {
-    setLoading(true)
-    try {
-      // Try to fetch from the materialized view first
-      let topSellingData: any[] = []
-      let useView = false
-        // Order by popularity score if available, otherwise by total_score
-        try {
-          giftQuery = giftQuery.order("popularity_score", { ascending: false })
-        } catch {
-          giftQuery = giftQuery.order("total_score", { ascending: false })
-        }
-
-        giftQuery = giftQuery.limit(showAllCategories ? 50 : limit)
-
-        const { data: giftsData, error: giftsError } = await giftQuery
-
-        if (giftsError) throw giftsError
-
-        // Process gifts to match the expected format
-        const processedTopProducts =
-          giftsData?.map((gift, index) => ({
-            gift_id: gift.id,
-            category_id: categoryId || "trending",
-            rank_in_category: index + 1,
-            sales_count: gift.sales_count || 0,
-            popularity_score: gift.popularity_score || gift.total_score,
-            title: gift.title,
-            image_url: gift.image_url,
-            price_range: gift.price_range,
-            total_score: gift.total_score,
-            click_count: gift.click_count || 0,
-          })) || []
-
-        setTopProducts(processedTopProducts)
-
-        // Process gifts for display
-        const processedGifts =
-          giftsData?.map((gift, index) => ({
-            ...gift,
-            user_vote: null, // Will be fetched separately if user is logged in
-            comments_count: 0, // Will be fetched separately
-            sales_count: gift.sales_count || 0,
-            popularity_score: gift.popularity_score || gift.total_score,
-            rank_in_category: index + 1,
-            category_id: categoryId || "trending",
-          })) || []
-
-        setFullGifts(processedGifts)
-        setLoading(false)
-        return
-      }
-
-      // If we got here, we successfully used the materialized view
-      setTopProducts(topSellingData)
-        // Merge data and maintain ranking order
-        const processedGifts = topSellingData
-          .map((topProduct) => {
-            const gift = giftsData?.find((g) => g.id === topProduct.gift_id)
-            const userVote = userVotes.find((v) => v.gift_id === topProduct.gift_id)
-            const commentCount = commentCounts.find((c) => c.gift_id === topProduct.gift_id)
-
-            return gift
-              ? {
-                  ...gift,
-                  user_vote: userVote?.vote_type || null,
-                  comments_count: commentCount?.count || 0,
-                  sales_count: topProduct.sales_count || 0,
-                  popularity_score: topProduct.popularity_score || 0,
-                  rank_in_category: topProduct.rank_in_category,
-                  category_id: topProduct.category_id,
-                }
-              : null
-          })
-          .filter(Boolean)
-
-        setFullGifts(processedGifts)
-      }
-    } catch (error) {
-      console.error("Error fetching top selling products:", error)
-      setTopProducts([])
-      setFullGifts([])
-    } finally {
-      setLoading(false)
-    }
-  
-
-  const getRankIcon = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return <Crown className="h-4 w-4 text-yellow-500" />
-      case 2:
-        return <Star className="h-4 w-4 text-gray-400" />
-      case 3:
-        return <Star className="h-4 w-4 text-amber-600" />
-      default:
-        return <Fire className="h-4 w-4 text-orange-500" />
-    }
-  }
-
-  const groupedByCategory = topProducts.reduce(
-    (acc, product) => {
-      if (!acc[product.category_id]) {
-        acc[product.category_id] = []
-      }
-      acc[product.category_id].push(product)
-      return acc
+  // Şimdilik örnek (mock) veri döndürüyoruz:
+  const mockProducts: Product[] = [
+    {
+      id: '1',
+      name: 'Ergonomik Ofis Sandalyesi',
+      category: 'Mobilya',
+      price: 4850.00,
+      imageUrl: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?q=80&w=400',
     },
-    {} as Record<string, TopSellingProduct[]>,
-  )
+    {
+      id: '2',
+      name: 'Mekanik Oyuncu Klavyesi',
+      category: 'Elektronik',
+      price: 2100.00,
+      imageUrl: 'https://images.unsplash.com/photo-1618384887924-2c8ab63a1a06?q=80&w=400',
+    },
+    {
+      id: '3',
+      name: 'Narenciye Özlü Serum',
+      category: 'Kişisel Bakım',
+      price: 750.50,
+      imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f168a7673b?q=80&w=400',
+    },
+    {
+      id: '4',
+      name: 'Kablosuz Gürültü Engelleme Kulaklık',
+      category: 'Elektronik',
+      price: 3500.00,
+      imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400',
+    },
+  ];
 
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <div className="animate-pulse">
-          <div className="h-6 bg-muted rounded w-1/3 mb-4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: limit }).map((_, i) => (
-              <div key={i} className="bg-muted aspect-square rounded-lg"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // Küçük bir gecikme simülasyonu
+  await new Promise(resolve => setTimeout(resolve, 500));
 
-  if (showAllCategories) {
-    return (
-      <div className="space-y-8">
-        {Object.entries(groupedByCategory).map(([catId, products]) => (
-          <div key={catId} className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                <h3 className="text-xl font-semibold">{CATEGORY_NAMES[catId]} - En Çok Satanlar</h3>
-                <Badge variant="secondary">{products.length} ürün</Badge>
-              </div>
-              <Button variant="outline" size="sm" asChild>
-                <Link href={`/categories/${catId}`}>
-                  Tümünü Gör
-                  <ChevronRight className="h-4 w-4 ml-1" />
-                </Link>
-              </Button>
-            </div>
+  return mockProducts;
+}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-              {products.slice(0, 5).map((product) => {
-                const gift = fullGifts.find((g) => g.id === product.gift_id)
-                if (!gift) return null
-
-                return (
-                  <div key={product.gift_id} className="relative">
-                    <div className="absolute top-2 left-2 z-10 flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
-                      {getRankIcon(product.rank_in_category)}
-                      <span className="text-xs font-medium">#{product.rank_in_category}</span>
-                    </div>
-                    <div className="absolute top-2 right-2 z-10">
-                      <Badge variant="secondary" className="text-xs">
-                        {product.sales_count} satış
-                      </Badge>
-                    </div>
-                    <div onClick={() => trackClick(product.gift_id, "view")}>
-                      <GiftCard gift={gift} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
+// 3. Ana "Server Component"
+// Bu bileşen, veriyi sunucuda `await` ile bekler ve sayfayı hazır olarak tarayıcıya gönderir.
+export default async function TopSellingProducts() {
+  const products = await getTopSellingProducts();
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-primary" />
-          {categoryId ? `${CATEGORY_NAMES[categoryId]} - En Çok Satanlar` : "En Çok Satan Hediyeler"}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {fullGifts.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">Henüz satış verisi bulunmamaktadır.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {fullGifts.slice(0, limit).map((gift) => {
-              const topProduct = topProducts.find((p) => p.gift_id === gift.id)
-              if (!topProduct) return null
+    <section className="bg-gray-50 py-12 sm:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            Çok Satan Ürünlerimiz
+          </h2>
+          <p className="mt-4 text-lg text-gray-600">
+            Müşterilerimizin favorilerini keşfedin.
+          </p>
+        </div>
 
-              return (
-                <div key={gift.id} className="relative">
-                  <div className="absolute top-2 left-2 z-10 flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
-                    {getRankIcon(topProduct.rank_in_category)}
-                    <span className="text-xs font-medium">#{topProduct.rank_in_category}</span>
-                  </div>
-                  <div className="absolute top-2 right-2 z-10">
-                    <Badge variant="secondary" className="text-xs">
-                      {topProduct.sales_count} satış
-                    </Badge>
-                  </div>
-                  <div onClick={() => trackClick(gift.id, "view")}>
-                    <GiftCard gift={gift} />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  )
+        <div className="mt-12 grid grid-cols-1 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// 4. Ürün Kartı Alt-Bileşeni (Daha temiz bir kod için)
+function ProductCard({ product }: { product: Product }) {
+  return (
+    <div className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg">
+      <div className="aspect-w-3 aspect-h-4 bg-gray-200 sm:aspect-none sm:h-60">
+        <Image
+          src={product.imageUrl}
+          alt={product.name}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          className="object-cover object-center"
+        />
+      </div>
+      <div className="flex flex-1 flex-col space-y-2 p-4">
+        <h3 className="text-lg font-semibold text-gray-900">
+          <span aria-hidden="true" className="absolute inset-0" />
+          {product.name}
+        </h3>
+        <p className="text-sm text-gray-500">{product.category}</p>
+        <div className="flex flex-1 flex-col justify-end">
+          <p className="text-xl font-bold text-gray-900">
+            {product.price.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

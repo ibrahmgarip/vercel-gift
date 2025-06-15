@@ -12,6 +12,7 @@ import Link from "next/link"
 import Slideshow from "@/components/slideshow"
 import Banner from "@/components/banners"
 import CommunityBanners from "@/components/community-banners"
+import TopSellingProducts from '@/components/top-selling-products';
 
 interface Filters {
   occasion: string[]
@@ -27,6 +28,7 @@ export default function HomePage() {
       <Slideshow />
       <CommunityBanners />
       <Banner />
+      <TopSellingProducts />
     </div>
   )
 }
