@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge"
 import { ExternalLink, ShoppingCart, TrendingDown, Clock, Check, X } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
-import { supabase } from "@/lib/supabase"
 
 type MarketplaceListing = {
   id: string
